@@ -208,3 +208,29 @@ diff -ur charts-original/rancher-monitoring/templates/prometheus-operator/servic
      {{- end }}
  {{- if .Values.prometheusOperator.serviceMonitor.relabelings }}
      relabelings:
+diff -ur charts-original/rancher-monitoring/templates/rancher-monitoring/exporters/rancher/servicemonitor.yaml charts/rancher-monitoring/templates/rancher-monitoring/exporters/rancher/servicemonitor.yaml
+--- charts-original/rancher-monitoring/templates/rancher-monitoring/exporters/rancher/servicemonitor.yaml	2026-01-24 06:59:34.000000000 +0530
++++ charts/rancher-monitoring/templates/rancher-monitoring/exporters/rancher/servicemonitor.yaml	2026-09-29 17:47:00.901708319 +0530
+@@ -14,16 +14,18 @@
+       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+       insecureSkipVerify: true
+       serverName: rancher
++    {{- if or .Values.global.cattle.clusterId .Values.global.cattle.clusterName }}
+     metricRelabelings:
+-    {{ if .Values.global.cattle.clusterId }}
++    {{- if .Values.global.cattle.clusterId }}
+       - sourceLabels: [__address__]
+         targetLabel: cluster_id
+-        replacement: {{ .Values.global.cattle.clusterId }}
++        replacement: {{ .Values.global.cattle.clusterId | quote }}
+     {{- end }}
+-    {{ if .Values.global.cattle.clusterName}}
++    {{- if .Values.global.cattle.clusterName }}
+       - sourceLabels: [__address__]
+         targetLabel: cluster_name
+-        replacement: {{ .Values.global.cattle.clusterName }}
++        replacement: {{ .Values.global.cattle.clusterName | quote }}
++    {{- end }}
+     {{- end }}
+   jobLabel: rancher
+ {{- if .Values.rancherMonitoring.namespaceSelector }}
